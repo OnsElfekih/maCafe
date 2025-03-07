@@ -11,6 +11,7 @@ A website project designed for coffee shop customers. It provides an intuitive i
 -Display coffee shop events and promotions.
 
 ## Technologies Used
+
 -**Frontend:** Angular, Bootstrap, HTML5, CSS3
 -**Backend & Database:** Firebase
 -**Design & Multimedia:** Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro
