@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaCafé - Tableau de bord</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo - Copie.png">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/feathericon.min.css">
+    <link rel="stylesheet" href="assets/plugins/datatables/datatables.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #ac6933;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .btn-sm {
+            margin-right: 5px;
+        }
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover {
+            color: black;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">
+                    <img src="assets/img/stage2.png" alt="Logo">
+                </a>
+                <a href="index.html" class="logo logo-small">
+                    <img src="assets/img/logo - Copie.png" alt="Logo" width="30" height="30">
+                </a>
+            </div>
+            <a href="javascript:void(0);" id="toggle_btn">
+                <i class="fe fe-text-align-left"></i>
+            </a>
+            <ul class="nav user-menu">
+                <li class="nav-item">
+                    <a href="login.html" class="nav-link">
+                        <span class="user-img"><img class="rounded-circle" src="assets/img/logo - Copie.png" width="31" alt="Utilisateur"></span> Déconnexion
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li> 
+                            <a href="staff.html"><i class="fe fe-users"></i> <span>Staff</span></a>
+                        </li>
+                        <li class="active">
+                            <a href="reservation.html"><i class="fe fe-calendar"></i> <span>Reservation</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-wrapper">
+            <div class="content container-fluid">
+                <h3 class="page-title">Les réservations</h3>
+                <table id="reservations-table" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Personnes</th>
+                            <th>Date</th>
+                            <th>Heure</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservations-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de modification -->
+    <div id="editModal" class="modal">
+        <div class="modal-content" style="width: 400px; padding: 20px; height: auto;">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h4>Modifier la réservation</h4>
+            <form id="editForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="editNom">Nom:</label>
+                    <input type="text" id="editNom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email:</label>
+                    <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPersonnes">Personnes:</label>
+                    <select id="editPersonnes" class="form-control" required>
+                        <option value="1">1 personne</option>
+                        <option value="2">2 personnes</option>
+                        <option value="3">3 personnes</option>
+                        <option value="4">4 personnes</option>
+                        <option value="5">5 personnes</option>
+                        <option value="6">6 personnes</option>
+                        <option value="7">7 personnes</option>
+                        <option value="8">8 personnes</option>
+                        <option value="9">9 personnes</option>
+                        <option value="10">10 personnes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDate">Date:</label>
+                    <input type="date" id="editDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTime">Heure:</label>
+                    <input type="time" id="editTime" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                <button type="button" class="btn btn-secondary" id="cancelButton" onclick="closeModal()">Annuler</button>
+
+            </form>
+        </div>
+    </div>
+    <script type="module">
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+    
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBF5u7KWKbZgGkwetkBfFUbtlqsfkxZ80c",
+            authDomain: "macafe-68e95.firebaseapp.com",
+            databaseURL: "https://macafe-68e95-default-rtdb.firebaseio.com",
+            projectId: "macafe-68e95",
+            storageBucket: "macafe-68e95.appspot.com",
+            messagingSenderId: "1021891320772",
+            appId: "1:1021891320772:web:d6f597da0e8026cddb2291"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    
+        window.onload = loadReservations;
+    
+        // Function to load reservations from Firestore and display them in the table
+        async function loadReservations() {
+            const reservationsCollection = collection(db, "reservations");
+            const snapshot = await getDocs(reservationsCollection);
+            const reservationsList = snapshot.docs.map(doc => doc.data());
+    
+            const tableBody = document.getElementById("reservations-body");
+            tableBody.innerHTML = ''; // Clear the table before adding data
+    
+            reservationsList.forEach((reservation, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${reservation.nom}</td>
+                    <td>${reservation.email}</td>
+                    <td>${reservation.personnes}</td>
+                    <td>${reservation.date}</td>
+                    <td>${reservation.time}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="openModal('${snapshot.docs[index].id}')">
+                            <i class="fas fa-edit"></i> 
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteReservation('${snapshot.docs[index].id}')">
+                            <i class="fas fa-trash-alt"></i> 
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    
+        // Function to delete a reservation
+        window.deleteReservation = async function(reservationId) {
+            const reservationRef = doc(db, "reservations", reservationId);
+            await deleteDoc(reservationRef);
+            loadReservations(); // Reload reservations after deletion
+        }
+    
+        // Function to open the modal and load reservation details
+        window.openModal = async function(reservationId) {
+            const modal = document.getElementById("editModal");
+            modal.style.display = "block"; // Show modal
+    
+            // Load reservation data into the form
+            const reservationRef = doc(db, "reservations", reservationId);
+            const docSnap = await getDoc(reservationRef);
+    
+            if (docSnap.exists()) {
+                const reservation = docSnap.data();
+                document.getElementById("editNom").value = reservation.nom;
+                document.getElementById("editEmail").value = reservation.email;
+                document.getElementById("editPersonnes").value = reservation.personnes;
+                document.getElementById("editDate").value = reservation.date;
+                document.getElementById("editTime").value = reservation.time;
+    
+                // Set up the form submit event
+                document.getElementById("editForm").onsubmit = function(event) {
+                    event.preventDefault(); // Prevent page reload
+                    updateReservation(reservationId);
+                };
+            } else {
+                console.log("No reservation found!");
+            }
+        };
+    
+        // Update reservation data in Firestore
+        async function updateReservation(reservationId) {
+            const reservationRef = doc(db, "reservations", reservationId);
+            await updateDoc(reservationRef, {
+                nom: document.getElementById("editNom").value,
+                email: document.getElementById("editEmail").value,
+                personnes: document.getElementById("editPersonnes").value,
+                date: document.getElementById("editDate").value,
+                time: document.getElementById("editTime").value
+            });
+    
+            alert("Réservation mise à jour!");
+            closeModal(); // Close the modal after updating
+        }
+            // Function to close the modal
+// Function to close the modal
+window.closeModal = function () {
+    document.getElementById("editModal").style.display = "none";
+};
+
+    
+    </script>
+    
+    
+    
+    
+    
+    
+</body>
+</html>

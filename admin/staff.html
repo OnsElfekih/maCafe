@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>MaCafé - Dashboard</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo - Copie.png">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/feathericon.min.css">
+    <link rel="stylesheet" href="assets/plugins/datatables/datatables.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+    <style>
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #ac6933;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .btn-sm {
+            margin-right: 5px;
+        }
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 400px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Firebase Scripts -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
+
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html" class="logo">
+                <img src="assets/img/stage2.png" alt="Logo">
+            </a>
+            <a href="index.html" class="logo logo-small">
+                <img src="assets/img/logo - Copie.png" alt="Logo" width="30" height="30">
+            </a>
+        </div>
+        <a href="javascript:void(0);" id="toggle_btn">
+            <i class="fe fe-text-align-left"></i>
+        </a>
+        <ul class="nav user-menu">
+            <li class="nav-item">
+                <a href="login.html" class="nav-link">
+                    <span class="user-img"><img class="rounded-circle" src="assets/img/logo - Copie.png" width="31" alt="MaCafe"></span> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+            <div id="sidebar-menu" class="sidebar-menu">
+                <ul>
+                    <li class="active"><a href="staff.html"><i class="fe fe-users"></i> <span>Staff</span></a></li>
+                    <li><a href="reservation.html"><i class="fe fe-calendar"></i> <span>Reservation</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <h3 class="page-title">Les personnels</h3>
+            <button class="btn btn-primary" onclick="openAddPersonnelModal()">Ajouter Personnel</button>
+            <table id="personnels" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Numéro</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="personnels-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="addPersonnelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddPersonnelModal()">&times;</span>
+            <h4>Ajouter un nouveau personnel</h4>
+            <form id="addPersonnelForm" method="post" onsubmit="submitForm(event); return false;">
+                <div class="form-group">
+                    <label for="addNom">Nom:</label>
+                    <input type="text" id="addNom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="addPrenom">Prénom:</label>
+                    <input type="text" id="addPrenom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="addEmail">Email:</label>
+                    <input type="email" id="addEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="addNumero">Numéro:</label>
+                    <input type="number" id="addNumero" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+                <button type="button" class="btn btn-secondary" onclick="closeAddPersonnelModal()">Annuler</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+    import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBF5u7KWKbZgGkwetkBfFUbtlqsfkxZ80c",
+        authDomain: "macafe-68e95.firebaseapp.com",
+        databaseURL: "https://macafe-68e95-default-rtdb.firebaseio.com",
+        projectId: "macafe-68e95",
+        storageBucket: "macafe-68e95.appspot.com",
+        messagingSenderId: "1021891320772",
+        appId: "1:1021891320772"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let editPersonnelId = null; // Store personnel being edited
+
+    // Function to open the modal and populate fields for editing
+    window.openAddPersonnelModal = function () {
+        editPersonnelId = null; // Clear any existing edit personnel ID
+        document.getElementById("addPersonnelModal").style.display = "block";
+    };
+
+    // Submit form (Add/Edit)
+    window.submitForm = function (event) {
+        event.preventDefault();
+
+        const nom = document.getElementById("addNom").value;
+        const prenom = document.getElementById("addPrenom").value;
+        const email = document.getElementById("addEmail").value;
+        const numero = document.getElementById("addNumero").value;
+
+        if (!nom || !prenom || !email || !numero) {
+            alert("Veuillez remplir tous les champs");
+            return;
+        }
+
+        if (editPersonnelId) {
+            // Update existing personnel
+            const staffRef = doc(db, "staff", editPersonnelId);
+            updateDoc(staffRef, {
+                nom: nom,
+                prenom: prenom,
+                email: email,
+                numero: numero
+            }).then(() => {
+                alert("Personnel mis à jour!");
+                closeAddPersonnelModal();
+                fetchPersonnels();
+            }).catch((error) => {
+                alert("Erreur lors de la mise à jour: " + error.message);
+            });
+        } else {
+            // Add new personnel
+            addDoc(collection(db, "staff"), {
+                nom: nom,
+                prenom: prenom,
+                email: email,
+                numero: numero
+            }).then(() => {
+                alert("Personnel ajouté!");
+                closeAddPersonnelModal();
+                fetchPersonnels();
+            }).catch((error) => {
+                alert("Erreur lors de l'ajout: " + error.message);
+            });
+        }
+    };
+
+    // Function to close the modal
+    window.closeAddPersonnelModal = function () {
+        document.getElementById("addPersonnelModal").style.display = "none";
+    };
+
+    // Fetch all personnels from Firestore
+    window.fetchPersonnels = function () {
+        const staffCollectionRef = collection(db, "staff");
+        getDocs(staffCollectionRef).then((querySnapshot) => {
+            const tableBody = document.getElementById("personnels-body");
+            tableBody.innerHTML = ""; // Clear the table before adding new rows
+            let index = 1; // Initialize the index
+            querySnapshot.forEach((doc) => {
+                const staff = doc.data();
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+                    <td>${index}</td>  <!-- This is the number starting from 1 -->
+                    <td>${staff.nom}</td>
+                    <td>${staff.prenom}</td>
+                    <td>${staff.email}</td>
+                    <td>${staff.numero}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="openEditPersonnelModal('${doc.id}')">
+                            <i class="fas fa-edit"></i> 
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePersonnel('${doc.id}')">
+                            <i class="fas fa-trash-alt"></i> 
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+                index++; // Increment the index
+            });
+        }).catch((error) => {
+            alert("Erreur lors de la récupération des personnels: " + error.message);
+        });
+    };
+
+    // Function to delete personnel
+    window.deletePersonnel = function (id) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce personnel?")) {
+            const staffRef = doc(db, "staff", id);
+            deleteDoc(staffRef).then(() => {
+                alert("Personnel supprimé!");
+                fetchPersonnels();
+            }).catch((error) => {
+                alert("Erreur lors de la suppression: " + error.message);
+            });
+        }
+    };
+    // Function to open the modal and populate fields for editing
+window.openEditPersonnelModal = function (id) {
+    editPersonnelId = id; // Store the personnel ID for editing
+    const staffRef = doc(db, "staff", id);
+
+    // Fetch personnel data and populate the form fields
+    getDoc(staffRef).then((docSnap) => {
+        if (docSnap.exists()) {
+            const staff = docSnap.data();
+            document.getElementById("addNom").value = staff.nom;
+            document.getElementById("addPrenom").value = staff.prenom;
+            document.getElementById("addEmail").value = staff.email;
+            document.getElementById("addNumero").value = staff.numero;
+
+            document.getElementById("addPersonnelModal").style.display = "block"; // Show the modal
+        } else {
+            alert("Personnel non trouvé");
+        }
+    }).catch((error) => {
+        alert("Erreur lors de la récupération des données: " + error.message);
+    });
+};
+
+
+    // Initial personnel fetch
+    fetchPersonnels();
+</script>
+
+
+</body>
+</html>

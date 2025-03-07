@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<!-- Mirrored from doccure-html.dreamguystech.com/template/admin/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 09 Jun 2021 13:36:49 GMT -->
+<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+        <title>MaCafé- Connexion</title>
+		
+		<!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo - Copie.png">
+
+		<!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		
+		<!-- Fontawesome CSS -->
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Main CSS -->
+        <link rel="stylesheet" href="assets/css/style.css">
+		
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.min.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+    </head>
+    <body>
+	
+		<!-- Main Wrapper -->
+        <div class="main-wrapper login-body">
+            <div class="login-wrapper">
+            	<div class="container">
+                	<div class="loginbox">
+                    	<div class="login-left">
+							<img class="img-fluid" src="assets/img/stage2-removebg-preview (1).png" alt="Logo">
+                        </div>
+                        <div class="login-right">
+							<div class="login-right-wrap">
+								<h1>Connexion</h1>
+								<p class="account-subtitle">Accédez à votre tableau de bord</p>
+								
+								
+								<!-- Form -->
+								<form>
+									<div class="form-group">
+										<input class="form-control" type="text" placeholder="Email">
+									</div>
+									<div class="form-group">
+										<div class="input-group">
+											<input id="password" class="form-control" type="password" placeholder="Mot De Passe">
+											<div class="input-group-append">
+												<span class="input-group-text" onclick="togglePassword()" style="cursor: pointer;">
+													<i id="eye-icon" class="fa fa-eye"></i>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<button class="btn btn-primary btn-block" type="submit">Connexion</button>
+									</div>
+								</form>
+								<!-- /Form -->
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<!-- /Main Wrapper -->
+		
+		<!-- jQuery -->
+        <script src="assets/js/jquery-3.2.1.min.js"></script>
+		
+		<!-- Bootstrap Core JS -->
+        <script src="assets/js/popper.min.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+		
+		<!-- Custom JS -->
+		<script src="assets/js/script.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				const loginForm = document.querySelector("form");
+			
+				loginForm.addEventListener("submit", function (e) {
+					e.preventDefault();
+			
+					const email = document.querySelector("input[placeholder='Email']").value;
+					const password = document.querySelector("input[placeholder='Mot De Passe']").value;
+			
+					if (email !== "macafe@gmail.com" && password !== "adminmacafe") {
+						alert("Email et mot de passe incorrects.");
+					} else if (email !== "macafe@gmail.com") {
+						alert("Email incorrect.");
+					} else if (password !== "adminmacafe") {
+						alert("Mot de passe incorrect.");
+					} else {
+						window.location.href = "index.html";
+					}
+				});
+			});
+			</script>
+			<script>
+				function togglePassword() {
+					const passwordField = document.getElementById("password");
+					const eyeIcon = document.getElementById("eye-icon");
+				
+					if (passwordField.type === "password") {
+						passwordField.type = "text";
+						eyeIcon.classList.remove("fa-eye");
+						eyeIcon.classList.add("fa-eye-slash");
+					} else {
+						passwordField.type = "password";
+						eyeIcon.classList.remove("fa-eye-slash");
+						eyeIcon.classList.add("fa-eye");
+					}
+				}
+				</script>
+			
+			
+			
+    </body>
+
+</html>
