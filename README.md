@@ -15,7 +15,7 @@ MaCafé is a web application built to enhance the customer experience for a coff
 ## Technologies Used
 
 - **Frontend:**  
-  Angular, Bootstrap, HTML5, CSS3
+  Bootstrap, HTML5, CSS3
 
 - **Backend & Database:**  
   Firebase
