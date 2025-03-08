@@ -1,17 +1,24 @@
 # MaCafé
-A website project designed for coffee shop customers. It provides an intuitive interface to access café information and interact with its services.
+
+MaCafé is a web application built to enhance the customer experience for a coffee shop. It offers an intuitive platform for accessing café information, making online orders, and interacting with the services provided.
 
 ## Features
--Store data in Firebase for fast and centralized access.
--Design a modern user interface with Bootstrap.
--Create visual assets (logo, posters) using Adobe Photoshop and Illustrator.
--Produce a promotional video with Adobe Premiere Pro.
--Provide an interactive menu for customers.
--Enable online ordering and reservation.
--Display coffee shop events and promotions.
+
+- Centralized data storage using Firebase for fast access and management.
+- Modern, responsive user interface built with Bootstrap.
+- Visual assets like logos and promotional posters designed using Adobe Photoshop and Illustrator.
+- Promotional videos created with Adobe Premiere Pro.
+- Interactive menu allowing customers to browse and place orders.
+- Online ordering and reservation functionality.
+- Display of coffee shop events and special promotions.
 
 ## Technologies Used
 
--**Frontend:** Angular, Bootstrap, HTML5, CSS3
--**Backend & Database:** Firebase
--**Design & Multimedia:** Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro
+- **Frontend:**  
+  Angular, Bootstrap, HTML5, CSS3
+
+- **Backend & Database:**  
+  Firebase
+
+- **Design & Multimedia:**  
+  Adobe Photoshop, Adobe Illustrator, Adobe Premiere Pro
